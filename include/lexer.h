@@ -46,6 +46,7 @@ enum token {
     VAL_NAME_TOKEN,
     INT_TOKEN,
     FLOAT_TOKEN,
+    ENDL_TOKEN,
     // STRING_TOKEN,
     ERROR_TOKEN
     // QUESTION_TOKEN,

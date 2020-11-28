@@ -1,7 +1,7 @@
 #include "lexer.h"
 
 void text_split_by_words(const std::string &file_name, std::vector<std::string> &words) {
-    std::vector<char> separators = {'=', '+', '-', '/', '*'/*, '?', ':'*/};
+    std::vector<char> separators = {'=', '+', '-', '/', '*', '\n'/*, '?', ':'*/};
     std::ifstream file;
     file.open(file_name, std::ios::in);
 
@@ -14,7 +14,7 @@ void text_split_by_words(const std::string &file_name, std::vector<std::string> 
     bool flag_begin_word = false;
 
     while ((symbol = file.get()) != EOF) {
-        if (symbol == ' ' || symbol == '\n') {
+        if (symbol == ' ') {
             flag_begin_word = false;
             continue;
         } else if (std::find(separators.begin(), separators.end(), symbol) != separators.end()) {
@@ -27,6 +27,9 @@ void text_split_by_words(const std::string &file_name, std::vector<std::string> 
         } else {
             *(words.end() - 1) += symbol;
         }
+    }
+    if (!words.empty()) {
+        words.emplace_back(1, '\n');
     }
     file.close();
 }
@@ -43,6 +46,7 @@ bool create_token_table(const std::vector<std::string> &words, std::vector<token
     sign.emplace("*", MULTIPLY_TOKEN);
     sign.emplace("/", DIV_TOKEN);
     sign.emplace("=", ASSIGN_TOKEN);
+    sign.emplace("\n", ENDL_TOKEN);
     // sign.emplace("?", QUESTION_TOKEN);
     // sign.emplace(":", COLON_TOKEN);
     const val_name_state_t valNameState[3][5] = {
@@ -193,6 +197,10 @@ void write_token_table(const std::vector<token_t> &token_table) {
             }
             case 7: {
                 std::cout << "FLOAT" << ' ';
+                break;
+            }
+            case 8: {
+                std::cout << "ENDL" << std::endl;
                 break;
             }
             default:
