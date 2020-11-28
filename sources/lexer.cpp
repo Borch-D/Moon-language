@@ -155,3 +155,48 @@ lexeme_t get_lexeme(char symbol) {
         return ERROR_LEXEME;
     }
 }
+
+void write_token_table(const std::vector<token_t> &token_table) {
+    if (token_table.empty()) {
+        std::cout << "Token table is empty!" << std::endl;
+        return;
+    }
+    for (token_t t : token_table) {
+        switch (t.token_key) {
+            case 0: {
+                std::cout << "PLUS" << ' ';
+                break;
+            }
+            case 1: {
+                std::cout << "MINUS" << ' ';
+                break;
+            }
+            case 2: {
+                std::cout << "MULTIPLY" << ' ';
+                break;
+            }
+            case 3: {
+                std::cout << "DIV" << ' ';
+                break;
+            }
+            case 4: {
+                std::cout << "ASSIGN" << ' ';
+                break;
+            }
+            case 5: {
+                std::cout << "VAL_NAME" << ' ';
+                break;
+            }
+            case 6: {
+                std::cout << "INT" << ' ';
+                break;
+            }
+            case 7: {
+                std::cout << "FLOAT" << ' ';
+                break;
+            }
+            default:
+                break;
+        }
+    }
+}
