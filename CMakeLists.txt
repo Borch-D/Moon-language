@@ -5,8 +5,14 @@ project(Moon)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(lexer_lib STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/lexer.cpp)
-add_library(parser_lib STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/parser.cpp)
+add_library(lexer_lib STATIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/sources/lexer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/sources/text_split_by_words.cpp
+        )
+
+add_library(parser_lib STATIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/sources/parser.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/sources/expression_parse.cpp)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
