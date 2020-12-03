@@ -1,9 +1,16 @@
+#ifndef MOON_LEXER_H
+#define MOON_LEXER_H
+
+#endif //MOON_LEXER_H
+
 #include <iostream>
 #include <vector>
 #include <string>
 #include <fstream>
 #include <algorithm>
 #include <map>
+#include "token.h"
+
 
 enum lexeme_t {
     LETTER_LEXEME = 0,
@@ -28,34 +35,6 @@ enum number_state_t {
     DOT_NUMBER,
     NUMERAL_FRACTIONAL_NUMBER,
     ERROR_NUMBER
-};
-
-/*
-enum string_state {
-    BEGIN_STRING = 0,
-
-};
-*/
-
-enum token {
-    PLUS_TOKEN = 0,
-    MINUS_TOKEN,
-    MULTIPLY_TOKEN,
-    DIV_TOKEN,
-    ASSIGN_TOKEN,
-    VAL_NAME_TOKEN,
-    INT_TOKEN,
-    FLOAT_TOKEN,
-    ENDL_TOKEN,
-    // STRING_TOKEN,
-    ERROR_TOKEN
-    // QUESTION_TOKEN,
-    // COLON_TOKEN
-};
-
-struct token_t {
-    token token_key;
-    const std::string *token_value;
 };
 
 void text_split_by_words(const std::string &, std::vector<std::string> &);

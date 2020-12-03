@@ -26,7 +26,7 @@ bool operations(std::vector<token_t>::const_iterator &begin_operation, main_valu
         begin_operation++;
         auto end_operation = std::find_if(begin_operation, mainValue->token_table->end(), isEndl);
         if (expression(begin_operation, end_operation, mainValue)) {
-            mainValue->byte_code->push_back({IDENTIFIER, (begin_operation - 2)->token_value});
+            mainValue->byte_code->push_back({IDENTIFIER, &*(begin_operation-2)});
             mainValue->byte_code->push_back({ASSIGMENT});
             mainValue->val_name.emplace(*((begin_operation-2)->token_value));
             begin_operation = end_operation;
@@ -69,7 +69,7 @@ bool expression(std::vector<token_t>::const_iterator begin, std::vector<token_t>
             }
             sign = end_term->token_key;
             begin = end_term + 1;
-        } else if ((end_term + 1)->token_key == ENDL_TOKEN && l_bracket_count == r_bracket_count) {
+        } else if (end_term + 1 == end && l_bracket_count == r_bracket_count) {
             if (!terminal(begin, end_term + 1, mainValue)) {
                 std::cout << "Terminal error!" << std::endl;
                 return false;
@@ -150,7 +150,7 @@ bool multiply(std::vector<token_t>::const_iterator begin, std::vector<token_t>::
     }
     if (begin + 1 == end && begin->token_key == VAL_NAME_TOKEN) {
         if (mainValue->val_name.find(*(begin->token_value)) != mainValue->val_name.end()) {
-            mainValue->byte_code->push_back({IDENTIFIER, begin->token_value});
+            mainValue->byte_code->push_back({IDENTIFIER, &*begin});
             mainValue->byte_code->push_back({PUSH_V});
             return true;
         } else {
@@ -158,7 +158,7 @@ bool multiply(std::vector<token_t>::const_iterator begin, std::vector<token_t>::
             return false;
         }
     } else if (begin + 1 == end && (begin->token_key == INT_TOKEN || begin->token_key == FLOAT_TOKEN)) {
-        mainValue->byte_code->push_back({PUSH_C, begin->token_value});
+        mainValue->byte_code->push_back({PUSH_C, &*begin});
         return true;
     } else if (begin->token_key == L_BRACKET_TOKEN && (end - 1)->token_key == R_BRACKET_TOKEN) {
         begin++;
@@ -182,7 +182,7 @@ void write_byte_code(std::vector<byte_code_t> &byte_code) {
     for (auto i : byte_code) {
         switch (i.command) {
             case 0: {
-                std::cout << "PUSH_C " << *(i.value) << std::endl;
+                std::cout << "PUSH_C " << *(i.value->token_value) << std::endl;
                 break;
             }
             case 1: {
@@ -190,7 +190,7 @@ void write_byte_code(std::vector<byte_code_t> &byte_code) {
                 break;
             }
             case 2: {
-                std::cout << "IDENTIFIER " << *(i.value) << std::endl;
+                std::cout << "IDENTIFIER " << *(i.value->token_value) << std::endl;
                 break;
             }
             case 3: {

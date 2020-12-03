@@ -1,47 +1,14 @@
+#ifndef MOON_PARSER_H
+#define MOON_PARSER_H
+
+#endif //MOON_PARSER_H
+
 #include <iostream>
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <set>
-
-enum token {
-    PLUS_TOKEN = 0,
-    MINUS_TOKEN,
-    MULTIPLY_TOKEN,
-    DIV_TOKEN,
-    ASSIGN_TOKEN,
-    VAL_NAME_TOKEN,
-    INT_TOKEN,
-    FLOAT_TOKEN,
-    L_BRACKET_TOKEN, // add in lexer
-    R_BRACKET_TOKEN, // add in lexer
-    ENDL_TOKEN,
-    // STRING_TOKEN,
-    ERROR_TOKEN
-    // QUESTION_TOKEN,
-    // COLON_TOKEN
-};
-
-struct token_t {
-    token token_key;
-    const std::string *token_value;
-};
-
-enum command_t {
-    PUSH_C = 0,
-    PUSH_V,
-    IDENTIFIER,
-    ASSIGMENT,
-    SUM,
-    SUB,
-    MULTIPLY,
-    DIV
-};
-
-struct byte_code_t {
-    command_t command;
-    const std::string *value;
-};
+#include "byte_code.h"
 
 struct main_value_t {
     const std::vector<token_t> *token_table;

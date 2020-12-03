@@ -5,8 +5,6 @@
 #ifndef MOON_TOKEN_H
 #define MOON_TOKEN_H
 
-#endif //MOON_TOKEN_H
-
 enum token {
     PLUS_TOKEN = 0,
     MINUS_TOKEN,
@@ -16,6 +14,8 @@ enum token {
     VAL_NAME_TOKEN,
     INT_TOKEN,
     FLOAT_TOKEN,
+    L_BRACKET_TOKEN,
+    R_BRACKET_TOKEN,
     ENDL_TOKEN,
     // STRING_TOKEN,
     ERROR_TOKEN
@@ -27,3 +27,6 @@ struct token_t {
     token token_key;
     const std::string *token_value;
 };
+
+#endif //MOON_TOKEN_H
+

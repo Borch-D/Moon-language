@@ -1,7 +1,7 @@
 #include "lexer.h"
 
 void text_split_by_words(const std::string &file_name, std::vector<std::string> &words) {
-    std::vector<char> separators = {'=', '+', '-', '/', '*', '\n'/*, '?', ':'*/};
+    std::vector<char> separators = {'=', '+', '-', '/', '*', '(', ')', '\n'/*, '?', ':'*/};
     std::ifstream file;
     file.open(file_name, std::ios::in);
 
@@ -46,6 +46,8 @@ bool create_token_table(const std::vector<std::string> &words, std::vector<token
     sign.emplace("*", MULTIPLY_TOKEN);
     sign.emplace("/", DIV_TOKEN);
     sign.emplace("=", ASSIGN_TOKEN);
+    sign.emplace("(", L_BRACKET_TOKEN);
+    sign.emplace(")", R_BRACKET_TOKEN);
     sign.emplace("\n", ENDL_TOKEN);
     // sign.emplace("?", QUESTION_TOKEN);
     // sign.emplace(":", COLON_TOKEN);
@@ -200,6 +202,14 @@ void write_token_table(const std::vector<token_t> &token_table) {
                 break;
             }
             case 8: {
+                std::cout << "L_BRACKET" << ' ';
+                break;
+            }
+            case 9: {
+                std::cout << "R_BRACKET" << ' ';
+                break;
+            }
+            case 10: {
                 std::cout << "ENDL" << std::endl;
                 break;
             }
