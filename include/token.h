@@ -17,7 +17,7 @@ enum token {
     L_BRACKET_TOKEN,
     R_BRACKET_TOKEN,
     ENDL_TOKEN,
-    // STRING_TOKEN,
+    STRING_TOKEN,
     ERROR_TOKEN
     // QUESTION_TOKEN,
     // COLON_TOKEN

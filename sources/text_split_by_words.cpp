@@ -21,6 +21,13 @@ void text_split_by_words(const std::string &file_name, std::vector<std::string> 
         if (symbol == ' ') {
             flag_begin_word = false;
             continue;
+        } else if (symbol == '"') {
+            words.emplace_back();
+            *(words.end() - 1) += '"';
+            while (((symbol = file.get()) != '"') && symbol != EOF) {
+                *(words.end() - 1) += symbol;
+            }
+            *(words.end() - 1) += '"';
         } else if (std::find(separators.begin(), separators.end(), symbol) != separators.end()) {
             words.emplace_back(1, symbol);
             flag_begin_word = false;

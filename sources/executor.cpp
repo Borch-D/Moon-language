@@ -23,47 +23,68 @@ bool executor(std::vector<byte_code_t> &byte_code) {
             }
             case IDENTIFIER: {
                 identifier = variable_table.find(*(instruction.value->token_value));
+                if (identifier == variable_table.end()) {
+                    variable_table.emplace(*(instruction.value->token_value), value_table.end()); // поправить
+                    identifier = variable_table.find(*(instruction.value->token_value));
+                }
                 break;
             }
             case ASSIGMENT: {
-                identifier->second->count_link--;
+                identifier->second->count_link--; // cогласовать с IDENTIFIER
                 if (identifier->second->count_link == 0) {
                     value_table.erase(identifier->second);
                 }
-                identifier->second = value_table.end();
+                auto last = value_table.end();
+                last--;
+                identifier->second = last;
                 identifier->second->count_link++;
                 break;
             }
             case SUM: {
-                auto res = value_table.end();
-                res--;
-                res->value += value_table.end()->value;
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                first->value += second->value;
                 value_table.pop_back();
                 break;
             }
             case SUB: {
-                auto res = value_table.end();
-                res--;
-                res->value -= value_table.end()->value;
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                first->value -= second->value;
                 value_table.pop_back();
                 break;
             }
             case MULTIPLY: {
-                auto res = value_table.end();
-                res--;
-                res->value *= value_table.end()->value;
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                first->value *= second->value;
                 value_table.pop_back();
                 break;
             }
             case DIV: {
-                auto res = value_table.end();
-                res--;
-                res->value /= value_table.end()->value;
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                first->value /= second->value;
                 value_table.pop_back();
                 break;
             }
+            default:
+                return false;
         }
     }
+    return true;
 }
 
 value_t cast_to_type(token_t t) {
@@ -79,45 +100,14 @@ value_t cast_to_type(token_t t) {
             result_value.type = FLOAT_TOKEN;
             return result_value;
         }
-    }
-}
-
-void value_t::operator+=(const value_t &rhs) {
-    if (this->type == FLOAT_TOKEN || rhs.type == FLOAT_TOKEN) {
-        this->data.val_float = static_cast<float>(this->data.val_int);
-        this->data.val_float += static_cast<float>(rhs.data.val_int);
-        this->type = FLOAT_TOKEN;
-    } else {
-        this->data.val_int += rhs.data.val_int;
-    }
-}
-
-void value_t::operator-=(const value_t &rhs) {
-    if (this->type == FLOAT_TOKEN || rhs.type == FLOAT_TOKEN) {
-        this->data.val_float = static_cast<float>(this->data.val_int);
-        this->data.val_float -= static_cast<float>(rhs.data.val_int);
-        this->type = FLOAT_TOKEN;
-    } else {
-        this->data.val_int -= rhs.data.val_int;
-    }
-}
-
-void value_t::operator*=(const value_t &rhs) {
-    if (this->type == FLOAT_TOKEN || rhs.type == FLOAT_TOKEN) {
-        this->data.val_float = static_cast<float>(this->data.val_int);
-        this->data.val_float *= static_cast<float>(rhs.data.val_int);
-        this->type = FLOAT_TOKEN;
-    } else {
-        this->data.val_int *= rhs.data.val_int;
-    }
-}
-
-void value_t::operator/=(const value_t &rhs) {
-    if (this->type == FLOAT_TOKEN || rhs.type == FLOAT_TOKEN) {
-        this->data.val_float = static_cast<float>(this->data.val_int);
-        this->data.val_float /= static_cast<float>(rhs.data.val_int);
-        this->type = FLOAT_TOKEN;
-    } else {
-        this->data.val_int /= rhs.data.val_int;
+        case STRING_TOKEN: {
+            result_value.data.val_string = *(t.token_value);
+            result_value.data.val_string.erase(0, 1);
+            result_value.data.val_string.erase(result_value.data.val_string.size() - 1);
+            result_value.type = STRING_TOKEN;
+            return result_value;
+        }
+        default:
+            break;
     }
 }

@@ -52,6 +52,10 @@ bool create_token_table(const std::vector<std::string> &words, std::vector<token
             token_table.push_back({find_token->second, &word});
             continue;
         }
+        if (word[0] == '"' && word[word.size()-1] == '"') {
+            token_table.push_back({STRING_TOKEN, &word});
+            continue;
+        }
         token current_token = get_token(word, valNameState, numberState);
         if (current_token == ERROR_TOKEN) {
             std::cout << "What is a " << word << " ?" << std::endl;
@@ -177,6 +181,10 @@ void write_token_table(const std::vector<token_t> &token_table) {
             }
             case 10: {
                 std::cout << "ENDL" << std::endl;
+                break;
+            }
+            case 11: {
+                std::cout << "STRING" << ' ';
                 break;
             }
             default:

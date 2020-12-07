@@ -125,7 +125,8 @@ bool multiply(std::vector<token_t>::const_iterator begin, std::vector<token_t>::
             std::cout << "Value " << *(begin->token_value) << " didn't declare!" << std::endl;
             return false;
         }
-    } else if (begin + 1 == end && (begin->token_key == INT_TOKEN || begin->token_key == FLOAT_TOKEN)) {
+    } else if (begin + 1 == end &&
+               (begin->token_key == INT_TOKEN || begin->token_key == FLOAT_TOKEN || begin->token_key == STRING_TOKEN)) {
         mainValue->byte_code->push_back({PUSH_C, &*begin});
         return true;
     } else if (begin->token_key == L_BRACKET_TOKEN && (end - 1)->token_key == R_BRACKET_TOKEN) {
