@@ -11,3 +11,5 @@ bool
 operations(std::vector<token_t>::const_iterator &, main_value_t *);
 
 void write_byte_code(std::vector<byte_code_t> &);
+
+bool isEndl(token_t);

@@ -13,7 +13,15 @@ enum command_t {
     SUM,
     SUB,
     MULTIPLY,
-    DIV
+    DIV,
+    LOGICAL_SUM,
+    LOGICAL_MULTIPLY,
+    COMPARE_LESS,
+    COMPARE_LESS_EQUAL,
+    COMPARE_MORE,
+    COMPARE_MORE_EQUAL,
+    COMPARE_EQUAL,
+    COMPARE_NOT_EQUAL
 };
 
 #endif //MOON_COMMAND_H

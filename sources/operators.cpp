@@ -4,9 +4,7 @@
 
 #include "operators.h"
 
-void value_t::operator+=(const value_t &rhs) {
-    token first_element_type = this->type;
-    token second_element_type = rhs.type;
+uint8_t learn_variable(std::pair<token, token> tokens) {
     std::vector<std::pair<token, token>> variable;
     variable.emplace_back(INT_TOKEN, INT_TOKEN);
     variable.emplace_back(FLOAT_TOKEN, FLOAT_TOKEN);
@@ -17,9 +15,17 @@ void value_t::operator+=(const value_t &rhs) {
     variable.emplace_back(STRING_TOKEN, INT_TOKEN);
     variable.emplace_back(FLOAT_TOKEN, STRING_TOKEN);
     variable.emplace_back(STRING_TOKEN, FLOAT_TOKEN);
-    std::pair<token, token> pair = {first_element_type, second_element_type};
-    auto it = std::find(variable.begin(), variable.end(), pair);
-    uint8_t rule_number = std::distance(variable.begin(), it);
+    auto it = std::find(variable.begin(), variable.end(), tokens);
+    if (it == variable.end()) {
+        std::cout << "Error!" << std::endl;
+        return 10;
+    }
+    return std::distance(variable.begin(), it);
+}
+
+bool value_t::operator+=(const value_t &rhs) {
+    std::pair<token, token> tokens = {this->type, rhs.type};
+    uint8_t rule_number = learn_variable(tokens);
     switch (rule_number) {
         // int + int
         case 0: {
@@ -73,26 +79,14 @@ void value_t::operator+=(const value_t &rhs) {
             break;
         }
         default:
-            break;
+            return false;
     }
+    return true;
 }
 
-void value_t::operator-=(const value_t &rhs) {
-    token first_element_type = this->type;
-    token second_element_type = rhs.type;
-    std::vector<std::pair<token, token>> variable;
-    variable.emplace_back(INT_TOKEN, INT_TOKEN);
-    variable.emplace_back(FLOAT_TOKEN, FLOAT_TOKEN);
-    variable.emplace_back(INT_TOKEN, FLOAT_TOKEN);
-    variable.emplace_back(FLOAT_TOKEN, INT_TOKEN);
-    variable.emplace_back(STRING_TOKEN, STRING_TOKEN);
-    variable.emplace_back(INT_TOKEN, STRING_TOKEN);
-    variable.emplace_back(STRING_TOKEN, INT_TOKEN);
-    variable.emplace_back(FLOAT_TOKEN, STRING_TOKEN);
-    variable.emplace_back(STRING_TOKEN, FLOAT_TOKEN);
-    std::pair<token, token> pair = {first_element_type, second_element_type};
-    auto it = std::find(variable.begin(), variable.end(), pair);
-    uint8_t rule_number = std::distance(variable.begin(), it);
+bool value_t::operator-=(const value_t &rhs) {
+    std::pair<token, token> tokens = {this->type, rhs.type};
+    uint8_t rule_number = learn_variable(tokens);
     switch (rule_number) {
         // int - int
         case 0: {
@@ -166,26 +160,14 @@ void value_t::operator-=(const value_t &rhs) {
             break;
         }
         default:
-            break;
+            return false;
     }
+    return true;
 }
 
-void value_t::operator*=(const value_t &rhs) {
-    token first_element_type = this->type;
-    token second_element_type = rhs.type;
-    std::vector<std::pair<token, token>> variable;
-    variable.emplace_back(INT_TOKEN, INT_TOKEN);
-    variable.emplace_back(FLOAT_TOKEN, FLOAT_TOKEN);
-    variable.emplace_back(INT_TOKEN, FLOAT_TOKEN);
-    variable.emplace_back(FLOAT_TOKEN, INT_TOKEN);
-    variable.emplace_back(STRING_TOKEN, STRING_TOKEN);
-    variable.emplace_back(INT_TOKEN, STRING_TOKEN);
-    variable.emplace_back(STRING_TOKEN, INT_TOKEN);
-    variable.emplace_back(FLOAT_TOKEN, STRING_TOKEN);
-    variable.emplace_back(STRING_TOKEN, FLOAT_TOKEN);
-    std::pair<token, token> pair = {first_element_type, second_element_type};
-    auto it = std::find(variable.begin(), variable.end(), pair);
-    uint8_t rule_number = std::distance(variable.begin(), it);
+bool value_t::operator*=(const value_t &rhs) {
+    std::pair<token, token> tokens = {this->type, rhs.type};
+    uint8_t rule_number = learn_variable(tokens);
     switch (rule_number) {
         // int * int
         case 0: {
@@ -264,26 +246,14 @@ void value_t::operator*=(const value_t &rhs) {
             break;
         }
         default:
-            break;
+            return false;
     }
+    return true;
 }
 
-void value_t::operator/=(const value_t &rhs) {
-    token first_element_type = this->type;
-    token second_element_type = rhs.type;
-    std::vector<std::pair<token, token>> variable;
-    variable.emplace_back(INT_TOKEN, INT_TOKEN);
-    variable.emplace_back(FLOAT_TOKEN, FLOAT_TOKEN);
-    variable.emplace_back(INT_TOKEN, FLOAT_TOKEN);
-    variable.emplace_back(FLOAT_TOKEN, INT_TOKEN);
-    variable.emplace_back(STRING_TOKEN, STRING_TOKEN);
-    variable.emplace_back(INT_TOKEN, STRING_TOKEN);
-    variable.emplace_back(STRING_TOKEN, INT_TOKEN);
-    variable.emplace_back(FLOAT_TOKEN, STRING_TOKEN);
-    variable.emplace_back(STRING_TOKEN, FLOAT_TOKEN);
-    std::pair<token, token> pair = {first_element_type, second_element_type};
-    auto it = std::find(variable.begin(), variable.end(), pair);
-    uint8_t rule_number = std::distance(variable.begin(), it);
+bool value_t::operator/=(const value_t &rhs) {
+    std::pair<token, token> tokens = {this->type, rhs.type};
+    uint8_t rule_number = learn_variable(tokens);
     switch (rule_number) {
         // int / int
         case 0: {
@@ -376,7 +346,409 @@ void value_t::operator/=(const value_t &rhs) {
             break;
         }
         default:
-            break;
+            return false;
     }
+    return true;
 }
 
+bool value_t::operator|(const value_t & rhs) {
+    if (this->type != BOOL_TOKEN || rhs.type != BOOL_TOKEN) {
+        std::cout << "Error: You can't logic sum this!" << std::endl;
+        return false;
+    }
+    this->data.val_bool = this->data.val_bool || rhs.data.val_bool;
+    return true;
+}
+
+bool value_t::operator&(const value_t & rhs) {
+    if (this->type != BOOL_TOKEN || rhs.type != BOOL_TOKEN) {
+        std::cout << "Error: You can't logic multiply this!" << std::endl;
+        return false;
+    }
+    this->data.val_bool = this->data.val_bool && rhs.data.val_bool;
+    return true;
+}
+
+bool value_t::operator<(const value_t & rhs) {
+    std::pair<token, token> tokens = {this->type, rhs.type};
+    uint8_t rule_number = learn_variable(tokens);
+    switch (rule_number) {
+        // int < int
+        case 0: {
+            this->data.val_bool = this->data.val_int < rhs.data.val_int;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < float
+        case 1: {
+            this->data.val_bool = this->data.val_float < rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < float
+        case 2: {
+            this->data.val_bool = static_cast<float>(this->data.val_int) < rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < int
+        case 3: {
+            this->data.val_bool = this->data.val_float < static_cast<float>(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string / string
+        case 4: {
+            this->data.val_bool = this->data.val_string < rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < string
+        case 5: {
+            this->data.val_bool = std::to_string(this->data.val_int) < rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < int
+        case 6: {
+            this->data.val_bool = this->data.val_string < std::to_string(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < string
+        case 7: {
+            this->data.val_bool = std::to_string(this->data.val_float) < rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < float
+        case 8: {
+            this->data.val_bool = this->data.val_string < std::to_string(rhs.data.val_float);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+        default:
+            return false;
+    }
+    return true;
+}
+
+bool value_t::operator<=(const value_t & rhs) {
+    std::pair<token, token> tokens = {this->type, rhs.type};
+    uint8_t rule_number = learn_variable(tokens);
+    switch (rule_number) {
+        // int < int
+        case 0: {
+            this->data.val_bool = this->data.val_int <= rhs.data.val_int;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < float
+        case 1: {
+            this->data.val_bool = this->data.val_float <= rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < float
+        case 2: {
+            this->data.val_bool = static_cast<float>(this->data.val_int) <= rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < int
+        case 3: {
+            this->data.val_bool = this->data.val_float <= static_cast<float>(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string / string
+        case 4: {
+            this->data.val_bool = this->data.val_string <= rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < string
+        case 5: {
+            this->data.val_bool = std::to_string(this->data.val_int) <= rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < int
+        case 6: {
+            this->data.val_bool = this->data.val_string <= std::to_string(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < string
+        case 7: {
+            this->data.val_bool = std::to_string(this->data.val_float) <= rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < float
+        case 8: {
+            this->data.val_bool = this->data.val_string <= std::to_string(rhs.data.val_float);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+        default:
+            return false;
+    }
+    return true;
+}
+
+bool value_t::operator>(const value_t & rhs) {
+    std::pair<token, token> tokens = {this->type, rhs.type};
+    uint8_t rule_number = learn_variable(tokens);
+    switch (rule_number) {
+        // int < int
+        case 0: {
+            this->data.val_bool = this->data.val_int > rhs.data.val_int;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < float
+        case 1: {
+            this->data.val_bool = this->data.val_float > rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < float
+        case 2: {
+            this->data.val_bool = static_cast<float>(this->data.val_int) > rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < int
+        case 3: {
+            this->data.val_bool = this->data.val_float > static_cast<float>(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string / string
+        case 4: {
+            this->data.val_bool = this->data.val_string > rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < string
+        case 5: {
+            this->data.val_bool = std::to_string(this->data.val_int) > rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < int
+        case 6: {
+            this->data.val_bool = this->data.val_string > std::to_string(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < string
+        case 7: {
+            this->data.val_bool = std::to_string(this->data.val_float) > rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < float
+        case 8: {
+            this->data.val_bool = this->data.val_string > std::to_string(rhs.data.val_float);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+        default:
+            return false;
+    }
+    return true;
+}
+
+bool value_t::operator>=(const value_t & rhs) {
+    std::pair<token, token> tokens = {this->type, rhs.type};
+    uint8_t rule_number = learn_variable(tokens);
+    switch (rule_number) {
+        // int < int
+        case 0: {
+            this->data.val_bool = this->data.val_int >= rhs.data.val_int;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < float
+        case 1: {
+            this->data.val_bool = this->data.val_float >= rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < float
+        case 2: {
+            this->data.val_bool = static_cast<float>(this->data.val_int) >= rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < int
+        case 3: {
+            this->data.val_bool = this->data.val_float >= static_cast<float>(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string / string
+        case 4: {
+            this->data.val_bool = this->data.val_string >= rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < string
+        case 5: {
+            this->data.val_bool = std::to_string(this->data.val_int) >= rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < int
+        case 6: {
+            this->data.val_bool = this->data.val_string >= std::to_string(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < string
+        case 7: {
+            this->data.val_bool = std::to_string(this->data.val_float) >= rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < float
+        case 8: {
+            this->data.val_bool = this->data.val_string >= std::to_string(rhs.data.val_float);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+        default:
+            return false;
+    }
+    return true;
+}
+
+bool value_t::operator==(const value_t & rhs) {
+    std::pair<token, token> tokens = {this->type, rhs.type};
+    uint8_t rule_number = learn_variable(tokens);
+    switch (rule_number) {
+        // int < int
+        case 0: {
+            this->data.val_bool = this->data.val_int == rhs.data.val_int;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < float
+        case 1: {
+            this->data.val_bool = this->data.val_float == rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < float
+        case 2: {
+            this->data.val_bool = static_cast<float>(this->data.val_int) == rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < int
+        case 3: {
+            this->data.val_bool = this->data.val_float == static_cast<float>(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string / string
+        case 4: {
+            this->data.val_bool = this->data.val_string == rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < string
+        case 5: {
+            this->data.val_bool = std::to_string(this->data.val_int) == rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < int
+        case 6: {
+            this->data.val_bool = this->data.val_string == std::to_string(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < string
+        case 7: {
+            this->data.val_bool = std::to_string(this->data.val_float) == rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < float
+        case 8: {
+            this->data.val_bool = this->data.val_string == std::to_string(rhs.data.val_float);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+        default:
+            return false;
+    }
+    return true;
+}
+
+bool value_t::operator!=(const value_t & rhs) {
+    std::pair<token, token> tokens = {this->type, rhs.type};
+    uint8_t rule_number = learn_variable(tokens);
+    switch (rule_number) {
+        // int < int
+        case 0: {
+            this->data.val_bool = this->data.val_int != rhs.data.val_int;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < float
+        case 1: {
+            this->data.val_bool = this->data.val_float != rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < float
+        case 2: {
+            this->data.val_bool = static_cast<float>(this->data.val_int) != rhs.data.val_float;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < int
+        case 3: {
+            this->data.val_bool = this->data.val_float != static_cast<float>(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string / string
+        case 4: {
+            this->data.val_bool = this->data.val_string != rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // int < string
+        case 5: {
+            this->data.val_bool = std::to_string(this->data.val_int) != rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < int
+        case 6: {
+            this->data.val_bool = this->data.val_string != std::to_string(rhs.data.val_int);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // float < string
+        case 7: {
+            this->data.val_bool = std::to_string(this->data.val_float) != rhs.data.val_string;
+            this->type = BOOL_TOKEN;
+            break;
+        }
+            // string < float
+        case 8: {
+            this->data.val_bool = this->data.val_string != std::to_string(rhs.data.val_float);
+            this->type = BOOL_TOKEN;
+            break;
+        }
+        default:
+            return false;
+    }
+    return true;
+}

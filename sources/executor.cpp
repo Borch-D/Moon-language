@@ -30,9 +30,11 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 break;
             }
             case ASSIGMENT: {
-                identifier->second->count_link--; // cогласовать с IDENTIFIER
-                if (identifier->second->count_link == 0) {
-                    value_table.erase(identifier->second);
+                if (identifier->second != value_table.end()) {
+                    identifier->second->count_link--;
+                    if (identifier->second->count_link == 0) {
+                        value_table.erase(identifier->second);
+                    }
                 }
                 auto last = value_table.end();
                 last--;
@@ -80,6 +82,98 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 value_table.pop_back();
                 break;
             }
+            case LOGICAL_SUM: {
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                first->value | second->value;
+                value_table.pop_back();
+                break;
+            }
+            case LOGICAL_MULTIPLY: {
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                first->value & second->value;
+                value_table.pop_back();
+                break;
+            }
+            case COMPARE_LESS: {
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                if (!(first->value < second->value)) {
+                    return false;
+                }
+                value_table.pop_back();
+                break;
+            }
+            case COMPARE_LESS_EQUAL: {
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                if (!(first->value <= second->value)) {
+                    return false;
+                }
+                value_table.pop_back();
+                break;
+            }
+            case COMPARE_MORE: {
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                if (!(first->value > second->value)) {
+                    return false;
+                }
+                value_table.pop_back();
+                break;
+            }
+            case COMPARE_MORE_EQUAL: {
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                if (!(first->value >= second->value)) {
+                    return false;
+                }
+                value_table.pop_back();
+                break;
+            }
+            case COMPARE_EQUAL: {
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                if (!(first->value == second->value)) {
+                    return false;
+                }
+                value_table.pop_back();
+                break;
+            }
+            case COMPARE_NOT_EQUAL: {
+                auto first = value_table.end();
+                auto second = value_table.end();
+                first--;
+                first--;
+                second--;
+                if (!(first->value != second->value)) {
+                    return false;
+                }
+                value_table.pop_back();
+                break;
+            }
             default:
                 return false;
         }
@@ -105,6 +199,15 @@ value_t cast_to_type(token_t t) {
             result_value.data.val_string.erase(0, 1);
             result_value.data.val_string.erase(result_value.data.val_string.size() - 1);
             result_value.type = STRING_TOKEN;
+            return result_value;
+        }
+        case BOOL_TOKEN: {
+            if (*(t.token_value) == "true") {
+                result_value.data.val_bool = true;
+            } else {
+                result_value.data.val_bool = false;
+            }
+            result_value.type = BOOL_TOKEN;
             return result_value;
         }
         default:

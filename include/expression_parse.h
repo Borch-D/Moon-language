@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <map>
 #include <set>
 #include "byte_code.h"
 
@@ -20,10 +21,15 @@ struct main_value_t {
     std::set<std::string> val_name;
 };
 
-bool expression(std::vector<token_t>::const_iterator, std::vector<token_t>::const_iterator, main_value_t *);
+bool main_expression(std::vector<token_t>::const_iterator, std::vector<token_t>::const_iterator, main_value_t *);
+
+bool
+logical_term_expression(std::vector<token_t>::const_iterator, std::vector<token_t>::const_iterator, main_value_t *);
+
+bool bool_expression(std::vector<token_t>::const_iterator, std::vector<token_t>::const_iterator, main_value_t *);
+
+bool calculate_expression(std::vector<token_t>::const_iterator, std::vector<token_t>::const_iterator, main_value_t *);
 
 bool terminal(std::vector<token_t>::const_iterator, std::vector<token_t>::const_iterator, main_value_t *);
 
 bool multiply(std::vector<token_t>::const_iterator, std::vector<token_t>::const_iterator, main_value_t *);
-
-bool isEndl(token_t);

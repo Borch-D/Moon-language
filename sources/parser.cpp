@@ -25,7 +25,7 @@ bool operations(std::vector<token_t>::const_iterator &begin_operation, main_valu
         // если это присваивание
         begin_operation++;
         auto end_operation = std::find_if(begin_operation, mainValue->token_table->end(), isEndl);
-        if (expression(begin_operation, end_operation, mainValue)) {
+        if (main_expression(begin_operation, end_operation, mainValue)) {
             mainValue->byte_code->push_back({IDENTIFIER, &*(begin_operation-2)});
             mainValue->byte_code->push_back({ASSIGMENT});
             mainValue->val_name.emplace(*((begin_operation-2)->token_value));
@@ -34,6 +34,10 @@ bool operations(std::vector<token_t>::const_iterator &begin_operation, main_valu
         }
     }
     return false;
+}
+
+bool isEndl(token_t t) {
+    return t.token_key == ENDL_TOKEN;
 }
 
 void write_byte_code(std::vector<byte_code_t> &byte_code) {
@@ -73,6 +77,38 @@ void write_byte_code(std::vector<byte_code_t> &byte_code) {
             }
             case 7: {
                 std::cout << "DIV" << std::endl;
+                break;
+            }
+            case 8: {
+                std::cout << "LOGICAL_SUM" << std::endl;
+                break;
+            }
+            case 9: {
+                std::cout << "LOGICAL_MULTIPLY" << std::endl;
+                break;
+            }
+            case 10: {
+                std::cout << "COMPARE_LESS" << std::endl;
+                break;
+            }
+            case 11: {
+                std::cout << "COMPARE_LESS_EQUAL" << std::endl;
+                break;
+            }
+            case 12: {
+                std::cout << "COMPARE_MORE" << std::endl;
+                break;
+            }
+            case 13: {
+                std::cout << "COMPARE_MORE_EQUAL" << std::endl;
+                break;
+            }
+            case 14: {
+                std::cout << "COMPARE_EQUAL" << std::endl;
+                break;
+            }
+            case 15: {
+                std::cout << "COMPARE_NOT_EQUAL" << std::endl;
                 break;
             }
         }
