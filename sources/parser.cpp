@@ -111,6 +111,14 @@ void write_byte_code(std::vector<byte_code_t> &byte_code) {
                 std::cout << "COMPARE_NOT_EQUAL" << std::endl;
                 break;
             }
+            case 16: {
+                std::cout << "OPEN_ARR" << std::endl;
+                break;
+            }
+            case 17: {
+                std::cout << "CLOSE_ARR" << std::endl;
+                break;
+            }
         }
     }
 }

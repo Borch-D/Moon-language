@@ -33,3 +33,5 @@ bool calculate_expression(std::vector<token_t>::const_iterator, std::vector<toke
 bool terminal(std::vector<token_t>::const_iterator, std::vector<token_t>::const_iterator, main_value_t *);
 
 bool multiply(std::vector<token_t>::const_iterator, std::vector<token_t>::const_iterator, main_value_t *);
+
+bool array(std::vector<token_t>::const_iterator, std::vector<token_t>::const_iterator, main_value_t *);

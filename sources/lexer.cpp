@@ -25,6 +25,9 @@ bool create_token_table(const std::vector<std::string> &words, std::vector<token
     sign.emplace("|", LOGICAL_OR_TOKEN);
     sign.emplace("true", BOOL_TOKEN);
     sign.emplace("false", BOOL_TOKEN);
+    sign.emplace("[", L_S_BRACKET_TOKEN);
+    sign.emplace("]", R_S_BRACKET_TOKEN);
+    sign.emplace(",", COMMA_TOKEN);
     // sign.emplace("?", QUESTION_TOKEN);
     // sign.emplace(":", COLON_TOKEN);
     const val_name_state_t valNameState[3][5] = {
@@ -231,6 +234,18 @@ void write_token_table(const std::vector<token_t> &token_table) {
             }
             case 20: {
                 std::cout << "BOOL" << ' ';
+                break;
+            }
+            case 21: {
+                std::cout << "L_S_BRACKET" << ' ';
+                break;
+            }
+            case 22: {
+                std::cout << "R_S_BRACKET" << ' ';
+                break;
+            }
+            case 23: {
+                std::cout << "COMMA" << ' ';
                 break;
             }
             default:

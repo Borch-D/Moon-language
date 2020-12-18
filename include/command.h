@@ -21,7 +21,9 @@ enum command_t {
     COMPARE_MORE,
     COMPARE_MORE_EQUAL,
     COMPARE_EQUAL,
-    COMPARE_NOT_EQUAL
+    COMPARE_NOT_EQUAL,
+    OPEN_ARR,
+    CLOSE_ARR
 };
 
 #endif //MOON_COMMAND_H
