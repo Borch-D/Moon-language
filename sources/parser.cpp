@@ -21,14 +21,33 @@ bool parse(const std::vector<token_t> &token_table, std::vector<byte_code_t> &by
 }
 
 bool operations(std::vector<token_t>::const_iterator &begin_operation, main_value_t *mainValue) {
-    if (begin_operation->token_key == VAL_NAME_TOKEN && (++begin_operation)->token_key == ASSIGN_TOKEN) {
+    if (begin_operation->token_key == VAL_NAME_TOKEN && (begin_operation + 1)->token_key == ASSIGN_TOKEN) {
         // если это присваивание
-        begin_operation++;
+        begin_operation += 2;
         auto end_operation = std::find_if(begin_operation, mainValue->token_table->end(), isEndl);
         if (main_expression(begin_operation, end_operation, mainValue)) {
-            mainValue->byte_code->push_back({IDENTIFIER, &*(begin_operation-2)});
+            mainValue->byte_code->push_back({IDENTIFIER, &*(begin_operation - 2)});
             mainValue->byte_code->push_back({ASSIGMENT});
-            mainValue->val_name.emplace(*((begin_operation-2)->token_value));
+            mainValue->val_name.emplace(*((begin_operation - 2)->token_value));
+            begin_operation = end_operation;
+            return true;
+        }
+    } else if (begin_operation->token_key == VAL_NAME_TOKEN && (begin_operation + 1)->token_key == L_S_BRACKET_TOKEN &&
+               ((begin_operation + 2)->token_key == INT_TOKEN || (begin_operation + 2)->token_key == VAL_NAME_TOKEN) &&
+               (begin_operation + 3)->token_key == R_S_BRACKET_TOKEN &&
+               (begin_operation + 4)->token_key == ASSIGN_TOKEN) {
+        auto end_operation = std::find_if(begin_operation, mainValue->token_table->end(), isEndl);
+        if (main_expression(begin_operation + 5, end_operation, mainValue)) {
+            if ((begin_operation + 2)->token_key == INT_TOKEN) {
+                mainValue->byte_code->push_back({PUSH_C, &*(begin_operation + 2)});
+            } else {
+                mainValue->byte_code->push_back({IDENTIFIER, &*(begin_operation + 2)});
+                mainValue->byte_code->push_back({PUSH_V});
+            }
+            mainValue->byte_code->push_back({IDENTIFIER, &*begin_operation});
+            mainValue->byte_code->push_back({ACCESS});
+            mainValue->byte_code->push_back({OVERWRITE});
+            mainValue->val_name.emplace(*((begin_operation - 2)->token_value));
             begin_operation = end_operation;
             return true;
         }
@@ -119,6 +138,19 @@ void write_byte_code(std::vector<byte_code_t> &byte_code) {
                 std::cout << "CLOSE_ARR" << std::endl;
                 break;
             }
+            case 18: {
+                std::cout << "ACCESS" << std::endl;
+                break;
+            }
+            case 19: {
+                std::cout << "OVERWRITE" << std::endl;
+                break;
+            }
+            case PUSH_A: {
+                std::cout << "PUSH_A" << std::endl;
+                break;
+            }
+
         }
     }
 }

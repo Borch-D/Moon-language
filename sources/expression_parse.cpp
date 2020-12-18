@@ -296,6 +296,20 @@ bool multiply(std::vector<token_t>::const_iterator begin, std::vector<token_t>::
             std::cout << "Value " << *(begin->token_value) << " didn't declare!" << std::endl;
             return false;
         }
+    } else if (begin->token_key == VAL_NAME_TOKEN && (begin + 1)->token_key == L_S_BRACKET_TOKEN &&
+               (end - 1)->token_key == R_S_BRACKET_TOKEN) {
+        if (mainValue->val_name.find(*(begin->token_value)) != mainValue->val_name.end()) {
+            if (!calculate_expression(begin + 2, end-1, mainValue)) {
+                return false;
+            }
+            mainValue->byte_code->push_back({IDENTIFIER, &*begin});
+            mainValue->byte_code->push_back({ACCESS});
+            mainValue->byte_code->push_back({PUSH_A});
+            return true;
+        } else {
+            std::cout << "Value " << *(begin->token_value) << " didn't declare!" << std::endl;
+            return false;
+        }
     } else if (begin + 1 == end &&
                (begin->token_key == INT_TOKEN || begin->token_key == FLOAT_TOKEN || begin->token_key == STRING_TOKEN ||
                 begin->token_key == BOOL_TOKEN)) {

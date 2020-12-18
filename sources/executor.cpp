@@ -9,6 +9,7 @@ bool executor(std::vector<byte_code_t> &byte_code) {
     std::map<std::string, std::list<value_table_t>::iterator> variable_table;
     std::list<value_table_t> value_table;
     std::map<std::string, std::list<value_table_t>::iterator>::iterator identifier;
+    std::list<value_table_t>::iterator index;
 
     for (auto instruction : byte_code) {
         switch (instruction.command) {
@@ -492,7 +493,8 @@ bool executor(std::vector<byte_code_t> &byte_code) {
             }
             case CLOSE_ARR: {
                 auto it = value_table.end();
-                int count = 1;
+                it--;
+                int count = 2;
                 while (!(it->value.data.arr.first)) {
                     count++;
                     it--;
@@ -504,12 +506,40 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 value_table.push_back(val);
                 break;
             }
+            case ACCESS: {
+                auto last = value_table.end();
+                last--;
+                if (!(identifier->second->value.data.arr.first) || last->value.type != INT_TOKEN) {
+                    return false;
+                }
+                index = identifier->second;
+                index++;
+                for (int i = 0; i < last->value.data.val_int; i++) {
+                    index++;
+                }
+                value_table.pop_back();
+                break;
+            }
+            case OVERWRITE: {
+                auto last = value_table.end();
+                last--;
+                index->value = last->value;
+                value_table.pop_back();
+                break;
+            }
+            case PUSH_A: {
+                value_table.push_back({index->value, 0});
+                break;
+            }
             default:
                 return false;
         }
     }
     for (auto a : value_table) {
         std::cout << a.value.data.val_int << std::endl;
+    }
+    for (auto a : variable_table) {
+        std::cout << a.first << std::endl;
     }
     return true;
 }

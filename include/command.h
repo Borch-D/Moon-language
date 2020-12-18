@@ -23,7 +23,10 @@ enum command_t {
     COMPARE_EQUAL,
     COMPARE_NOT_EQUAL,
     OPEN_ARR,
-    CLOSE_ARR
+    CLOSE_ARR,
+    ACCESS,
+    OVERWRITE,
+    PUSH_A
 };
 
 #endif //MOON_COMMAND_H
