@@ -37,8 +37,7 @@ bool main_expression(std::vector<token_t>::const_iterator begin, std::vector<tok
                 mainValue->byte_code->push_back({LOGICAL_SUM});
             }
             begin = end_logical_term + 1;
-        } else if (end_logical_term + 1 == end && l_bracket_count == r_bracket_count &&
-                   l_s_bracket_count == r_s_bracket_count) {
+        } else if (end_logical_term + 1 == end) {
             if (!logical_term_expression(begin, end_logical_term + 1, mainValue)) {
                 std::cout << "Terminal error!" << std::endl;
                 return false;
@@ -88,8 +87,7 @@ logical_term_expression(std::vector<token_t>::const_iterator begin, std::vector<
                 mainValue->byte_code->push_back({LOGICAL_MULTIPLY});
             }
             begin = end_bool_expr + 1;
-        } else if (end_bool_expr + 1 == end && l_bracket_count == r_bracket_count &&
-                   l_s_bracket_count == r_s_bracket_count) {
+        } else if (end_bool_expr + 1 == end) {
             if (!bool_expression(begin, end_bool_expr + 1, mainValue)) {
                 std::cout << "Terminal error!" << std::endl;
                 return false;
@@ -148,8 +146,7 @@ bool bool_expression(std::vector<token_t>::const_iterator begin, std::vector<tok
             }
             last_sign = end_calc_expr->token_key;
             begin = end_calc_expr + 1;
-        } else if (end_calc_expr + 1 == end && l_bracket_count == r_bracket_count &&
-                   l_s_bracket_count == r_s_bracket_count) {
+        } else if (end_calc_expr + 1 == end) {
             if (!calculate_expression(begin, end_calc_expr + 1, mainValue)) {
                 std::cout << "Terminal error!" << std::endl;
                 return false;
@@ -205,8 +202,7 @@ bool calculate_expression(std::vector<token_t>::const_iterator begin, std::vecto
             }
             sign = end_term->token_key;
             begin = end_term + 1;
-        } else if (end_term + 1 == end && l_bracket_count == r_bracket_count &&
-                   l_s_bracket_count == r_s_bracket_count) {
+        } else if (end_term + 1 == end) {
             if (!terminal(begin, end_term + 1, mainValue)) {
                 std::cout << "Terminal error!" << std::endl;
                 return false;
@@ -265,8 +261,7 @@ bool terminal(std::vector<token_t>::const_iterator begin, std::vector<token_t>::
             }
             sign = end_mult->token_key;
             begin = end_mult + 1;
-        } else if (end_mult + 1 == end && l_bracket_count == r_bracket_count &&
-                   l_s_bracket_count == r_s_bracket_count) {
+        } else if (end_mult + 1 == end) {
             if (!multiply(begin, end_mult + 1, mainValue)) {
                 std::cout << "Multiply error!" << std::endl;
                 return false;
@@ -318,7 +313,8 @@ bool multiply(std::vector<token_t>::const_iterator begin, std::vector<token_t>::
         if (main_expression(begin, end, mainValue)) {
             return true;
         }
-    }
+    } else
+        return false;
     return false;
 }
 
@@ -338,7 +334,7 @@ bool array(std::vector<token_t>::const_iterator begin, std::vector<token_t>::con
                 return false;
             }
             begin = end_expr + 1;
-        } else if (end_expr + 1 == end && l_s_bracket_count == r_s_bracket_count) {
+        } else if (end_expr + 1 == end) {
             if (!main_expression(begin, end_expr + 1, mainValue)) {
                 return false;
             }

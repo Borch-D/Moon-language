@@ -19,12 +19,20 @@ bool executor(std::vector<byte_code_t> &byte_code) {
             }
             case PUSH_V: {
                 value_table.push_back({identifier->second->value, 0});
+                if (identifier->second->value.data.arr.first) { // если это массив
+                    auto it = identifier->second;
+                    it++;
+                    for (int i = 1; i < identifier->second->value.data.size_arr; i++) {
+                        value_table.push_back({it->value, 0});
+                        it++;
+                    }
+                }
                 break;
             }
             case IDENTIFIER: {
                 identifier = variable_table.find(*(instruction.value->token_value));
                 if (identifier == variable_table.end()) {
-                    variable_table.emplace(*(instruction.value->token_value), value_table.end()); // поправить
+                    variable_table.emplace(*(instruction.value->token_value), value_table.end());
                     identifier = variable_table.find(*(instruction.value->token_value));
                 }
                 break;
@@ -33,11 +41,24 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 if (identifier->second != value_table.end()) {
                     identifier->second->count_link--;
                     if (identifier->second->count_link == 0) {
-                        value_table.erase(identifier->second);
+                        auto it = identifier->second;
+                        if (identifier->second->value.data.arr.first) { // если массив
+                            for (int i = 0; i < it->value.data.size_arr - 1; i++) {
+                                auto prev = it;
+                                it++;
+                                value_table.erase(prev);
+                            }
+                        }
+                        value_table.erase(it);
                     }
                 }
                 auto last = value_table.end();
                 last--;
+                if (last->value.data.arr.second) {
+                    for (int i = last->value.data.size_arr; i > 1; i--) {
+                        last--;
+                    }
+                }
                 identifier->second = last;
                 identifier->second->count_link++;
                 break;
@@ -48,8 +69,30 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                first->value += second->value;
-                value_table.pop_back();
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        first->value += second->value;
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        first->value += second->value;
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    first->value += second->value;
+                    value_table.pop_back();
+                }
                 break;
             }
             case SUB: {
@@ -58,8 +101,30 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                first->value -= second->value;
-                value_table.pop_back();
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        first->value -= second->value;
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        first->value -= second->value;
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    first->value -= second->value;
+                    value_table.pop_back();
+                }
                 break;
             }
             case MULTIPLY: {
@@ -68,8 +133,30 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                first->value *= second->value;
-                value_table.pop_back();
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        first->value *= second->value;
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        first->value *= second->value;
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    first->value *= second->value;
+                    value_table.pop_back();
+                }
                 break;
             }
             case DIV: {
@@ -78,8 +165,30 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                first->value /= second->value;
-                value_table.pop_back();
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        first->value /= second->value;
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        first->value /= second->value;
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    first->value /= second->value;
+                    value_table.pop_back();
+                }
                 break;
             }
             case LOGICAL_SUM: {
@@ -88,8 +197,30 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                first->value | second->value;
-                value_table.pop_back();
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        first->value | second->value;
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        first->value | second->value;
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    first->value | second->value;
+                    value_table.pop_back();
+                }
                 break;
             }
             case LOGICAL_MULTIPLY: {
@@ -98,8 +229,30 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                first->value & second->value;
-                value_table.pop_back();
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        first->value & second->value;
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        first->value & second->value;
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    first->value & second->value;
+                    value_table.pop_back();
+                }
                 break;
             }
             case COMPARE_LESS: {
@@ -108,10 +261,36 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                if (!(first->value < second->value)) {
-                    return false;
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        if (!(first->value < second->value)) {
+                            return false;
+                        }
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        if (!(first->value < second->value)) {
+                            return false;
+                        }
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    if (!(first->value < second->value)) {
+                        return false;
+                    }
+                    value_table.pop_back();
                 }
-                value_table.pop_back();
                 break;
             }
             case COMPARE_LESS_EQUAL: {
@@ -120,10 +299,36 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                if (!(first->value <= second->value)) {
-                    return false;
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        if (!(first->value <= second->value)) {
+                            return false;
+                        }
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        if (!(first->value <= second->value)) {
+                            return false;
+                        }
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    if (!(first->value <= second->value)) {
+                        return false;
+                    }
+                    value_table.pop_back();
                 }
-                value_table.pop_back();
                 break;
             }
             case COMPARE_MORE: {
@@ -132,10 +337,36 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                if (!(first->value > second->value)) {
-                    return false;
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        if (!(first->value > second->value)) {
+                            return false;
+                        }
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        if (!(first->value > second->value)) {
+                            return false;
+                        }
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    if (!(first->value > second->value)) {
+                        return false;
+                    }
+                    value_table.pop_back();
                 }
-                value_table.pop_back();
                 break;
             }
             case COMPARE_MORE_EQUAL: {
@@ -144,10 +375,36 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                if (!(first->value >= second->value)) {
-                    return false;
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        if (!(first->value >= second->value)) {
+                            return false;
+                        }
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        if (!(first->value >= second->value)) {
+                            return false;
+                        }
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    if (!(first->value >= second->value)) {
+                        return false;
+                    }
+                    value_table.pop_back();
                 }
-                value_table.pop_back();
                 break;
             }
             case COMPARE_EQUAL: {
@@ -156,10 +413,36 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                if (!(first->value == second->value)) {
-                    return false;
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        if (!(first->value == second->value)) {
+                            return false;
+                        }
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        if (!(first->value == second->value)) {
+                            return false;
+                        }
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    if (!(first->value == second->value)) {
+                        return false;
+                    }
+                    value_table.pop_back();
                 }
-                value_table.pop_back();
                 break;
             }
             case COMPARE_NOT_EQUAL: {
@@ -168,15 +451,65 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 first--;
                 first--;
                 second--;
-                if (!(first->value != second->value)) {
-                    return false;
+
+                if (first->value.data.arr.second) { // если массив первый
+                    first--;
+                    for (int i = 0; i < first->value.data.size_arr - 2; i++) {
+                        if (!(first->value != second->value)) {
+                            return false;
+                        }
+                        first--;
+                    }
+                    value_table.pop_back();
+                } else if (second->value.data.arr.second) { // если массив второй
+                    for (int i = 0; i < second->value.data.size_arr - 1; i++) {
+                        first--;
+                    }
+                    second--;
+                    for (int i = 0; i < second->value.data.size_arr - 2; i++) {
+                        if (!(first->value != second->value)) {
+                            return false;
+                        }
+                        second--;
+                        value_table.pop_back();
+                    }
+                    value_table.pop_back();
+                    value_table.pop_back();
+                } else {
+                    if (!(first->value != second->value)) {
+                        return false;
+                    }
+                    value_table.pop_back();
                 }
-                value_table.pop_back();
+                break;
+            }
+            case OPEN_ARR: {
+                value_table_t val;
+                val.value.data.arr.first = true;
+                val.count_link = 0;
+                value_table.push_back(val);
+                break;
+            }
+            case CLOSE_ARR: {
+                auto it = value_table.end();
+                int count = 1;
+                while (!(it->value.data.arr.first)) {
+                    count++;
+                    it--;
+                }
+                it->value.data.size_arr = count;
+                value_table_t val;
+                val.value.data.arr.second = true;
+                val.value.data.size_arr = count;
+                value_table.push_back(val);
                 break;
             }
             default:
                 return false;
         }
+    }
+    for (auto a : value_table) {
+        std::cout << a.value.data.val_int << std::endl;
     }
     return true;
 }
@@ -186,11 +519,13 @@ value_t cast_to_type(token_t t) {
     switch (t.token_key) {
         case INT_TOKEN: {
             result_value.data.val_int = std::stoi(*(t.token_value));
+            result_value.data.size_arr = 0;
             result_value.type = INT_TOKEN;
             return result_value;
         }
         case FLOAT_TOKEN: {
             result_value.data.val_float = std::stof(*(t.token_value));
+            result_value.data.size_arr = 0;
             result_value.type = FLOAT_TOKEN;
             return result_value;
         }
@@ -198,6 +533,7 @@ value_t cast_to_type(token_t t) {
             result_value.data.val_string = *(t.token_value);
             result_value.data.val_string.erase(0, 1);
             result_value.data.val_string.erase(result_value.data.val_string.size() - 1);
+            result_value.data.size_arr = 0;
             result_value.type = STRING_TOKEN;
             return result_value;
         }
@@ -207,6 +543,7 @@ value_t cast_to_type(token_t t) {
             } else {
                 result_value.data.val_bool = false;
             }
+            result_value.data.size_arr = 0;
             result_value.type = BOOL_TOKEN;
             return result_value;
         }

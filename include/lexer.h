@@ -44,3 +44,5 @@ token get_token(const std::string &, const val_name_state_t [3][5], const number
 lexeme_t get_lexeme(char);
 
 void write_token_table(const std::vector<token_t> &);
+
+void delete_extra_bracket(std::vector<token_t> &);

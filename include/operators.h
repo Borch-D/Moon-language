@@ -18,6 +18,8 @@ struct data_t {
     int val_int;
     float val_float;
     std::string val_string;
+    std::pair<bool, bool> arr;
+    uint32_t size_arr;
 };
 
 struct value_t {

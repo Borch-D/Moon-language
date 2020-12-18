@@ -65,7 +65,7 @@ bool create_token_table(const std::vector<std::string> &words, std::vector<token
             token_table.push_back({find_token->second, &word});
             continue;
         }
-        if (word[0] == '"' && word[word.size()-1] == '"') {
+        if (word[0] == '"' && word[word.size() - 1] == '"') {
             token_table.push_back({STRING_TOKEN, &word});
             continue;
         }
@@ -76,6 +76,7 @@ bool create_token_table(const std::vector<std::string> &words, std::vector<token
         }
         token_table.push_back({current_token, &word});
     }
+    delete_extra_bracket(token_table);
     return true;
 }
 
@@ -142,6 +143,28 @@ lexeme_t get_lexeme(char symbol) {
         return DOT_LEXEME;
     } else {
         return ERROR_LEXEME;
+    }
+}
+
+void delete_extra_bracket(std::vector<token_t> &token_table) {
+    auto it = token_table.begin();
+    int start = 0;
+    int end = 0;
+    while (it != token_table.end()) {
+        if (it->token_key == L_S_BRACKET_TOKEN) {
+            start++;
+            if (start - end >= 2) {
+                token_table.erase(it);
+                continue;
+            }
+        } else if (it->token_key == R_S_BRACKET_TOKEN) {
+            end++;
+            if (start > end) {
+                token_table.erase(it);
+                continue;
+            }
+        }
+        it++;
     }
 }
 
