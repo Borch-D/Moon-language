@@ -10,11 +10,14 @@ bool executor(std::vector<byte_code_t> &byte_code) {
     std::list<value_table_t> value_table;
     std::map<std::string, std::list<value_table_t>::iterator>::iterator identifier;
     std::list<value_table_t>::iterator index;
+    std::vector<bool> flags = {false};
+    size_t nesting_level = 0;
 
-    for (auto instruction : byte_code) {
-        switch (instruction.command) {
+    auto instruction = byte_code.begin();
+    while (instruction != byte_code.end()) {
+        switch (instruction->command) {
             case PUSH_C: {
-                value_t val = cast_to_type(*(instruction.value));
+                value_t val = cast_to_type(*(instruction->value));
                 value_table.push_back({val, 0});
                 break;
             }
@@ -31,10 +34,10 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 break;
             }
             case IDENTIFIER: {
-                identifier = variable_table.find(*(instruction.value->token_value));
+                identifier = variable_table.find(*(instruction->value->token_value));
                 if (identifier == variable_table.end()) {
-                    variable_table.emplace(*(instruction.value->token_value), value_table.end());
-                    identifier = variable_table.find(*(instruction.value->token_value));
+                    variable_table.emplace(*(instruction->value->token_value), value_table.end());
+                    identifier = variable_table.find(*(instruction->value->token_value));
                 }
                 break;
             }
@@ -531,9 +534,58 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 value_table.push_back({index->value, 0});
                 break;
             }
+            case START_BLOCK: {
+                flags.push_back(false);
+                nesting_level++;
+                break;
+            }
+            case END_BLOCK: {
+                flags.pop_back();
+                nesting_level--;
+                break;
+            }
+            case SET_FLAG: {
+                auto last = value_table.end();
+                last--;
+                if (last->value.type != BOOL_TOKEN) {
+                    std::cout << "Not bool" << std::endl;
+                    return false;
+                }
+                flags[nesting_level] = last->value.data.val_bool;
+                value_table.pop_back();
+                break;
+            }
+            case JUMP_IN_END: {
+                if (flags[nesting_level]) {
+                    instruction++;
+                    continue;
+                }
+                int start = 0;
+                int end = 0;
+                do {
+                    instruction++;
+                    if (instruction->command == START_BLOCK) {
+                        start++;
+                    } else if (instruction->command == END_BLOCK) {
+                        end++;
+                    }
+                } while (instruction->command != END_BLOCK || start != end);
+                break;
+            }
+            case RESET_FLAG: {
+                flags[nesting_level] = !flags[nesting_level];
+                break;
+            }
+            case JUMP_IN_WHILE_LABEL: {
+                break;
+            }
+            case WHILE_LABEL: {
+                break;
+            }
             default:
                 return false;
         }
+        instruction++;
     }
     for (auto a : value_table) {
         std::cout << a.value.data.val_int << std::endl;
