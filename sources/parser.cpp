@@ -35,7 +35,7 @@ bool operations(std::vector<token_t>::const_iterator &begin_operation, main_valu
     } else if (begin_operation->token_key == VAL_NAME_TOKEN && (begin_operation + 1)->token_key == L_S_BRACKET_TOKEN &&
                ((begin_operation + 2)->token_key == INT_TOKEN || (begin_operation + 2)->token_key == VAL_NAME_TOKEN) &&
                (begin_operation + 3)->token_key == R_S_BRACKET_TOKEN &&
-               (begin_operation + 4)->token_key == ASSIGN_TOKEN) {
+               (begin_operation + 4)->token_key == ASSIGN_TOKEN) { // если это присваивание переменной массива
         auto end_operation = std::find_if(begin_operation, mainValue->token_table->end(), isEndl);
         if (main_expression(begin_operation + 5, end_operation, mainValue)) {
             if ((begin_operation + 2)->token_key == INT_TOKEN) {
@@ -51,6 +51,37 @@ bool operations(std::vector<token_t>::const_iterator &begin_operation, main_valu
             begin_operation = end_operation;
             return true;
         }
+    } else if (begin_operation->token_key == IF_TOKEN) { // если встретился if
+        auto end_condition = std::find_if(begin_operation, mainValue->token_table->end(), isEndl);
+        if (!main_expression(begin_operation + 1, end_condition, mainValue)) {
+            return false;
+        }
+        mainValue->byte_code->push_back({SET_FLAG});
+        begin_operation = end_condition;
+        return true;
+    } else if (begin_operation->token_key == L_F_BRACKET_TOKEN) {
+        begin_operation++;
+        mainValue->byte_code->push_back({JUMP_IN_END});
+        mainValue->byte_code->push_back({START_BLOCK});
+        return true;
+    } else if (begin_operation->token_key == R_F_BRACKET_TOKEN) {
+        begin_operation++;
+        mainValue->byte_code->push_back({JUMP_IN_WHILE_LABEL});
+        mainValue->byte_code->push_back({END_BLOCK});
+        return true;
+    } else if (begin_operation->token_key == ELSE_TOKEN) {
+        begin_operation++;
+        mainValue->byte_code->push_back({RESET_FLAG});
+        return true;
+    } else if (begin_operation->token_key == WHILE_TOKEN) { // если while
+        auto end_condition = std::find_if(begin_operation, mainValue->token_table->end(), isEndl);
+        mainValue->byte_code->push_back({WHILE_LABEL});
+        if (!main_expression(begin_operation + 1, end_condition, mainValue)) {
+            return false;
+        }
+        mainValue->byte_code->push_back({SET_FLAG});
+        begin_operation = end_condition;
+        return true;
     }
     return false;
 }
@@ -146,11 +177,38 @@ void write_byte_code(std::vector<byte_code_t> &byte_code) {
                 std::cout << "OVERWRITE" << std::endl;
                 break;
             }
-            case PUSH_A: {
+            case 20: {
                 std::cout << "PUSH_A" << std::endl;
                 break;
             }
-
+            case 21: {
+                std::cout << "START_BLOCK" << std::endl;
+                break;
+            }
+            case 22: {
+                std::cout << "END_BLOCK" << std::endl;
+                break;
+            }
+            case 23: {
+                std::cout << "SET_FLAG" << std::endl;
+                break;
+            }
+            case 24: {
+                std::cout << "JUMP_IN_END" << std::endl;
+                break;
+            }
+            case 25: {
+                std::cout << "RESET_FLAG" << std::endl;
+                break;
+            }
+            case 26: {
+                std::cout << "JUMP_IN_WHILE_LABEL" << std::endl;
+                break;
+            }
+            case 27: {
+                std::cout << "WHILE_LABEL" << std::endl;
+                break;
+            }
         }
     }
 }

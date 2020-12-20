@@ -26,7 +26,14 @@ enum command_t {
     CLOSE_ARR,
     ACCESS,
     OVERWRITE,
-    PUSH_A
+    PUSH_A,
+    START_BLOCK,
+    END_BLOCK,
+    SET_FLAG,
+    JUMP_IN_END,
+    RESET_FLAG,
+    JUMP_IN_WHILE_LABEL,
+    WHILE_LABEL
 };
 
 #endif //MOON_COMMAND_H

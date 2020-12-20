@@ -5,7 +5,8 @@
 #include "text_split_by_words.h"
 
 void text_split_by_words(const std::string &file_name, std::vector<std::string> &words) {
-    std::vector<char> separators = {'=', '+', '-', '/', '*', '(', ')', '&', '|', '[', ']', ',', '\n'/*, '?', ':'*/};
+    std::vector<char> separators = {'=', '+', '-', '/', '*', '(', ')', '&', '|', '[', ']', ',', '{', '}',
+                                    '\n'/*, '?', ':'*/};
     std::vector<char> double_separators_first = {'<', '>', '=', '!'};
     char double_separators_second = '=';
 
