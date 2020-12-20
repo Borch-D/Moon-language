@@ -10,7 +10,7 @@ bool executor(std::vector<byte_code_t> &byte_code) {
     std::list<value_table_t> value_table;
     std::map<std::string, std::list<value_table_t>::iterator>::iterator identifier;
     std::list<value_table_t>::iterator index;
-    std::vector<bool> flags = {false};
+    std::vector<std::pair<bool, bool>> flags = {{false, false}};
     size_t nesting_level = 0;
 
     auto instruction = byte_code.begin();
@@ -535,7 +535,7 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                 break;
             }
             case START_BLOCK: {
-                flags.push_back(false);
+                flags.push_back({false, false});
                 nesting_level++;
                 break;
             }
@@ -551,12 +551,12 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                     std::cout << "Not bool" << std::endl;
                     return false;
                 }
-                flags[nesting_level] = last->value.data.val_bool;
+                flags[nesting_level].first = last->value.data.val_bool;
                 value_table.pop_back();
                 break;
             }
             case JUMP_IN_END: {
-                if (flags[nesting_level]) {
+                if (flags[nesting_level].first) {
                     instruction++;
                     continue;
                 }
@@ -570,16 +570,31 @@ bool executor(std::vector<byte_code_t> &byte_code) {
                         end++;
                     }
                 } while (instruction->command != END_BLOCK || start != end);
+                instruction++;
                 break;
             }
             case RESET_FLAG: {
-                flags[nesting_level] = !flags[nesting_level];
+                flags[nesting_level].first = !flags[nesting_level].first;
                 break;
             }
             case JUMP_IN_WHILE_LABEL: {
+                if (!flags[nesting_level].second) {
+                    break;
+                }
+                int start = 0;
+                int end = 0;
+                do {
+                    instruction--;
+                    if (instruction->command == START_BLOCK) {
+                        start++;
+                    } else if (instruction->command == END_BLOCK) {
+                        end++;
+                    }
+                } while (instruction->command != WHILE_LABEL || start != end);
                 break;
             }
             case WHILE_LABEL: {
+                flags[nesting_level].second = true;
                 break;
             }
             default:

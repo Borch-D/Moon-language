@@ -66,8 +66,8 @@ bool operations(std::vector<token_t>::const_iterator &begin_operation, main_valu
         return true;
     } else if (begin_operation->token_key == R_F_BRACKET_TOKEN) {
         begin_operation++;
-        mainValue->byte_code->push_back({JUMP_IN_WHILE_LABEL});
         mainValue->byte_code->push_back({END_BLOCK});
+        mainValue->byte_code->push_back({JUMP_IN_WHILE_LABEL});
         return true;
     } else if (begin_operation->token_key == ELSE_TOKEN) {
         begin_operation++;
